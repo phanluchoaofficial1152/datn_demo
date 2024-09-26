@@ -7,9 +7,14 @@ export async function GET(req: NextRequest) {
     const token = req.cookies.get("access_token")?.value;
 
     if (!token) {
-      return new NextResponse(JSON.stringify({ message: "Token bị thiếu." }), {
-        status: 401,
-      });
+      return new NextResponse(
+        JSON.stringify({
+          message: "Thiếu thông tin xác thực, vui lòng kiểm tra lại.",
+        }),
+        {
+          status: 401,
+        }
+      );
     }
 
     const decoded = jwt.verify(
@@ -60,7 +65,9 @@ export async function DELETE(req: NextRequest) {
 
     if (!token) {
       return new NextResponse(
-        JSON.stringify({ message: "Token không tồn tại." }),
+        JSON.stringify({
+          message: "Thiếu thông tin xác thực, vui lòng kiểm tra lại.",
+        }),
         {
           status: 401,
         }
