@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { login } from "@/store/user/userSlice";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -52,25 +52,26 @@ const LoginPage = () => {
             router.push("/");
           }, 500);
         } catch (error) {
-          toast.error(
-            error instanceof Error
-              ? error.message
-              : "Đã xảy ra lỗi khi tải thông tin người dùng."
-          );
+          if (error instanceof AxiosError) {
+            toast.error(error.response?.data?.message || "Đã xảy ra lỗi.");
+          } else {
+            toast.error("Đã xảy ra lỗi.");
+          }
         }
       } else {
-        toast.error(
-          "Không tìm thấy thông tin để xác thực. Vui lòng đăng nhập lại."
-        );
-      }
-
-      if (!response.ok) {
-        toast.error("Đã xảy ra lỗi ...");
-        console.log(data.message);
+        toast.error(data?.message || "Đã xảy ra lỗi.");
       }
     } catch (error) {
+      if (error instanceof AxiosError) {
+        toast.error(error.response?.data?.message || "Đã xảy ra lỗi.");
+      } else {
+        toast.error("Đã xảy ra lỗi.");
+      }
+
       setErrorMessage(
-        error instanceof Error ? error.message : "Đã xảy ra lỗi."
+        error instanceof AxiosError
+          ? error.response?.data?.message
+          : "Đã xảy ra lỗi."
       );
       setIsErrorVisible(true);
       setFadeOut(false);
