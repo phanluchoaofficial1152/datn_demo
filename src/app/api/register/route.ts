@@ -16,13 +16,17 @@ export async function POST(req: Request) {
       );
     }
 
-    const existingUser = await AccountModels.findOne({ email });
-
-    if (existingUser) {
+    const existingUserByEmail = await AccountModels.findOne({ email });
+    if (existingUserByEmail) {
       return NextResponse.json(
         { message: "Email đã tồn tại." },
         { status: 409 }
       );
+    }
+
+    const existingUserByName = await AccountModels.findOne({ name });
+    if (existingUserByName) {
+      return NextResponse.json({ message: "Tên đã tồn tại." }, { status: 409 });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);

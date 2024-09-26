@@ -8,7 +8,8 @@ import Image from "next/image";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import toast from "react-hot-toast";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
+import { useRouter } from "next/navigation";
 
 interface FormValues {
   email: string;
@@ -20,6 +21,8 @@ interface FormValues {
 const RegisterPage = () => {
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const imgBBKey = process.env.NEXT_PUBLIC_IMGBB_KEY;
+
+  const router = useRouter();
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -67,7 +70,7 @@ const RegisterPage = () => {
       if (imgData.success) {
         imageUrl = imgData.data.url;
       } else {
-        console.error("Image upload failed:", imgData.message);
+        console.error("Upload hình ảnh thất bại: ", imgData.message);
         toast.error("Đã xảy ra lỗi khi tải lên hình ảnh.");
       }
     }
@@ -87,9 +90,16 @@ const RegisterPage = () => {
       });
 
       toast.success(response.data.message);
+
+      setTimeout(() => router.push("/account/login"), 300);
     } catch (error) {
       console.error(error);
-      toast.error("Đã xảy ra lỗi.");
+
+      if (error instanceof AxiosError) {
+        toast.error(error.response?.data?.message || "Đã xảy ra lỗi.");
+      } else {
+        toast.error("Đã xảy ra lỗi.");
+      }
     }
   };
 
