@@ -164,7 +164,7 @@ const LoginPage = () => {
               </div>
             </div>
             <div>
-              <Button type="submit" className="w-full">
+              <Button type="submit" className="w-full dark:bg-[#0C0C0E]">
                 Đăng nhập
               </Button>
             </div>

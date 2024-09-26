@@ -92,7 +92,7 @@ const Headers = () => {
         </nav>
 
         <div className="hidden md:flex items-center">
-          <Input placeholder="Tìm kiếm..." className="mr-4" />
+          <Input placeholder="Tìm kiếm..." className="mr-4 text-black" />
           <Button variant="ghost">
             <SearchIcon className="h-5 w-5 text-gray-500 dark:text-white" />
           </Button>
@@ -161,7 +161,10 @@ const Headers = () => {
             <div className="border-t border-gray-300 dark:border-white my-4"></div>
 
             <div className="flex items-center">
-              <Input placeholder="Tìm kiếm..." className="mr-2 flex-1" />
+              <Input
+                placeholder="Tìm kiếm..."
+                className="mr-2 flex-1 text-black"
+              />
               <Button variant="ghost">
                 <SearchIcon className="h-5 w-5 text-gray-500 dark:text-white" />
               </Button>

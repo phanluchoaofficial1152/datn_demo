@@ -33,13 +33,13 @@ export default function RootLayout({
           href="https://open.spotifycdn.com/cdn/images/favicon.0f31d2ea.ico"
         ></link>
       </head>
-      <body className={`container mx-auto`}>
+      <body className={`container mx-auto text-black dark:text-white`}>
         <Provider store={store}>
           <Headers />
           <Toaster position="top-center" />
           <ThemeProvider
             attribute="class"
-            defaultTheme="dark"
+            defaultTheme="light"
             enableSystem={false}
             storageKey="datn-theme"
           >

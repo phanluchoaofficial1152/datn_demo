@@ -10,6 +10,7 @@ import * as Yup from "yup";
 import toast from "react-hot-toast";
 import axios, { AxiosError } from "axios";
 import { useRouter } from "next/navigation";
+import { IoLogoGoogle } from "react-icons/io5";
 
 interface FormValues {
   email: string;
@@ -115,7 +116,7 @@ const RegisterPage = () => {
 
           <div className="text-center mb-6">
             <Button className="w-full bg-red-500 hover:bg-red-600">
-              Đăng ký với Google
+              <IoLogoGoogle className="mr-2" size={20} /> Đăng ký với Google
             </Button>
           </div>
 
@@ -246,7 +247,7 @@ const RegisterPage = () => {
                 <div>
                   <Button
                     type="submit"
-                    className="w-full mt-2 mb-0"
+                    className="w-full mt-2 mb-0 dark:bg-[#0C0C0E]"
                     disabled={!isValid || isSubmitting}
                   >
                     Đăng ký

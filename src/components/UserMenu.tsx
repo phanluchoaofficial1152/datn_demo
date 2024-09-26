@@ -46,13 +46,11 @@ const UserMenu: React.FC<UserMenuProps> = ({ userImage }) => {
           />
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" sideOffset={10} className="w-48">
-          <DropdownMenuItem>
+          <DropdownMenuItem className="cursor-pointer">
             <Link href="/account/info">Cập nhật tài khoản</Link>
           </DropdownMenuItem>
-          <DropdownMenuItem>
-            <div className="cursor-pointer" onClick={handleLogout}>
-              Đăng xuất
-            </div>
+          <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
+            Đăng xuất
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
