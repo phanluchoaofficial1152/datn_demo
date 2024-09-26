@@ -11,6 +11,7 @@ import Image from "next/image";
 import { useDispatch } from "react-redux";
 import { logout } from "@/store/user/userSlice";
 import { useRouter } from "next/navigation";
+import axios from "axios";
 
 interface UserMenuProps {
   userImage: string;
@@ -20,12 +21,16 @@ const UserMenu: React.FC<UserMenuProps> = ({ userImage }) => {
   const dispatch = useDispatch();
   const router = useRouter();
 
-  const handleLogout = () => {
-    dispatch(logout());
-
-    setTimeout(() => {
-      router.push("/account/login");
-    }, 100);
+  const handleLogout = async () => {
+    try {
+      const response = await axios.delete("/api/users");
+      if (response.status === 200) {
+        dispatch(logout());
+        router.push("/account/login");
+      }
+    } catch (error) {
+      console.error("Đăng xuất thất bại: ", error);
+    }
   };
 
   return (

@@ -1,8 +1,8 @@
 import dbConnect from "@/lib/mongodb";
 import AccountModels from "@/models/UserModels";
-import { NextResponse } from "next/server";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { NextResponse } from "next/server";
 
 interface TokenProps {
   userId: string;
@@ -15,9 +15,11 @@ export async function POST(req: Request) {
     const { email, password, username } = await req.json();
 
     if ((!email && !username) || !password) {
-      return NextResponse.json(
-        { message: "Email hoặc Tên người dùng và Mật khẩu là bắt buộc." },
-        { status: 400 }
+      return new Response(
+        JSON.stringify({
+          message: "Email hoặc Tên người dùng và Mật khẩu là bắt buộc.",
+        }),
+        { status: 400, headers: { "Content-Type": "application/json" } }
       );
     }
 
@@ -26,18 +28,18 @@ export async function POST(req: Request) {
     });
 
     if (!user) {
-      return NextResponse.json(
-        { message: "Người dùng không tồn tại." },
-        { status: 404 }
+      return new Response(
+        JSON.stringify({ message: "Người dùng không tồn tại." }),
+        { status: 404, headers: { "Content-Type": "application/json" } }
       );
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
-      return NextResponse.json(
-        { message: "Mật khẩu không đúng." },
-        { status: 401 }
-      );
+      return new Response(JSON.stringify({ message: "Mật khẩu không đúng." }), {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      });
     }
 
     const tokenProps: TokenProps = {
@@ -46,23 +48,29 @@ export async function POST(req: Request) {
 
     const token = createToken(tokenProps);
 
-    const res = NextResponse.json(
-      { message: "Đăng nhập thành công." },
-      { status: 200 }
+    const response = new NextResponse(
+      JSON.stringify({ message: "Đăng nhập thành công." }),
+      {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      }
     );
 
-    res.cookies.set("access_token", token, {
-      httpOnly: false,
-      maxAge: 60 * 60 * 24 * 7,
-      path: "/",
-    });
+    response.headers.set(
+      "Set-Cookie",
+      `access_token=${token}; Path=/; Max-Age=${
+        60 * 60 * 24 * 7
+      }; HttpOnly; SameSite=Strict`
+    );
 
-    return res;
+    return response;
   } catch (error) {
     console.error(error);
-    return NextResponse.json(
-      { message: error instanceof Error ? error.message : "Đã xảy ra lỗi." },
-      { status: 500 }
+    return new Response(
+      JSON.stringify({
+        message: error instanceof Error ? error.message : "Đã xảy ra lỗi.",
+      }),
+      { status: 500, headers: { "Content-Type": "application/json" } }
     );
   }
 }

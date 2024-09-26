@@ -1,5 +1,4 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import Cookies from "js-cookie";
 
 interface UserState {
   isLoggedIn: boolean;
@@ -22,13 +21,9 @@ const userSlice = createSlice({
     logout(state) {
       state.isLoggedIn = false;
       state.userImage = null;
-      Cookies.remove("access_token");
-    },
-    updateUserImage(state, action: PayloadAction<string | null>) {
-      state.userImage = action.payload;
     },
   },
 });
 
-export const { login, logout, updateUserImage } = userSlice.actions;
+export const { login, logout } = userSlice.actions;
 export default userSlice.reducer;

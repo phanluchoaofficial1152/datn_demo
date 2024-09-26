@@ -11,13 +11,11 @@ import {
   AlignRight,
   AlignJustify,
 } from "lucide-react";
-import Cookies from "js-cookie";
-import jwt from "jsonwebtoken";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/store/store";
-import { updateUserImage } from "@/store/user/userSlice";
+import { login } from "@/store/user/userSlice";
 import UserMenu from "./UserMenu";
 
 const Headers = () => {
@@ -26,43 +24,37 @@ const Headers = () => {
   const dispatch = useDispatch();
   const userImage = useSelector((state: RootState) => state.user.userImage);
 
-  const fetchToken = async () => {
-    const cookiesToken = Cookies.get("access_token");
-
-    if (cookiesToken) {
-      try {
-        const decodedToken = jwt.decode(cookiesToken) as { userId?: string };
-
-        if (decodedToken?.userId) {
-          try {
-            const response = await axios.get(
-              `/api/users/${decodedToken.userId}`
-            );
-
-            const userData = response.data;
-
-            dispatch(updateUserImage(userData.images));
-          } catch (error) {
-            toast.error(
-              error instanceof Error ? error.message : "Đã xảy ra lỗi."
-            );
-          }
-        } else {
-          toast.error("user này không tồn tại.");
-        }
-      } catch (error) {
-        toast.error(
-          error instanceof Error ? error.message : "Đã xảy ra lỗi khi xử lý."
-        );
-      }
-    } else {
-      toast.dismiss("");
-    }
-  };
-
   useEffect(() => {
+    const fetchToken = async () => {
+      const accessToken = await axios.get("/api/token");
+
+      const token = accessToken.data;
+
+      const tokenValue = token.access_token;
+
+      if (!tokenValue) {
+        return;
+      }
+
+      if (tokenValue) {
+        try {
+          const userResponse = await axios.get("/api/users");
+
+          const userData = userResponse.data;
+
+          dispatch(login(userData.images));
+        } catch (error) {
+          toast.error(
+            error instanceof Error
+              ? error.message
+              : "Đã xảy ra lỗi khi tải thông tin người dùng."
+          );
+        }
+      }
+    };
+
     fetchToken();
-  });
+  }, [dispatch]);
 
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
