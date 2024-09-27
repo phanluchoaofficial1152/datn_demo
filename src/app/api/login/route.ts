@@ -60,7 +60,7 @@ export async function POST(req: Request) {
       "Set-Cookie",
       `access_token=${token}; Path=/; Max-Age=${
         60 * 60 * 24 * 7
-      }; HttpOnly; SameSite=Strict`
+      }; HttpOnly; SameSite=Strict;`
     );
 
     return response;
@@ -81,7 +81,7 @@ function createToken({ userId }: TokenProps): string {
     exp: Math.floor(Date.now() / 1000) + 60 * 60,
   };
 
-  return jwt.sign(payload, process.env.NEXT_PUBLIC_JWT_SECRET as string, {
-    algorithm: "HS512",
+  return jwt.sign(payload, process.env.NEXT_PUBLIC_JWT_PRIVATE_KEY as string, {
+    algorithm: "ES512",
   });
 }

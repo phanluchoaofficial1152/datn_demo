@@ -1,10 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 import { jwtVerify, JWTPayload } from "jose";
+import { importSPKI } from "jose";
 
 async function verifyToken(token: string): Promise<JWTPayload | null> {
   try {
-    const secret = new TextEncoder().encode(process.env.NEXT_PUBLIC_JWT_SECRET);
-    const { payload } = await jwtVerify(token, secret);
+    const publicKey = await importSPKI(
+      process.env.NEXT_PUBLIC_JWT_PUBLIC_KEY!,
+      "ES512"
+    );
+
+    const { payload } = await jwtVerify(token, publicKey, {
+      algorithms: ["ES512"],
+    });
+
     return payload;
   } catch (err) {
     console.error("Xác minh token thất bại: ", err);
@@ -16,13 +24,21 @@ export async function middleware(req: NextRequest) {
   const token = req.cookies.get("access_token")?.value;
   const { pathname } = req.nextUrl;
 
+  if (pathname === "/account/register" || pathname === "/account/login") {
+    if (!token) {
+      return NextResponse.next();
+    } else {
+      const payload = await verifyToken(token);
+      if (payload && typeof payload.userId === "string") {
+        return NextResponse.redirect(new URL("/", req.url));
+      }
+    }
+  }
+
   if (token) {
     const payload = await verifyToken(token);
 
     if (payload && typeof payload.userId === "string") {
-      if (pathname === "/account/register" || pathname === "/account/login") {
-        return NextResponse.redirect(new URL("/", req.url));
-      }
       return NextResponse.next();
     }
 
@@ -31,10 +47,6 @@ export async function middleware(req: NextRequest) {
     );
     redirectResponse.cookies.delete("access_token");
     return redirectResponse;
-  }
-
-  if (pathname === "/account/register" || pathname === "/account/login") {
-    return NextResponse.next();
   }
 
   if (

@@ -19,7 +19,8 @@ export async function GET(req: NextRequest) {
 
     const decoded = jwt.verify(
       token,
-      String(process.env.NEXT_PUBLIC_JWT_SECRET)
+      String(process.env.NEXT_PUBLIC_JWT_PUBLIC_KEY),
+      { algorithms: ["ES512"] }
     ) as string | JwtPayload;
 
     if (typeof decoded !== "string" && decoded.userId) {
